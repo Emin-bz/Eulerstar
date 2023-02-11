@@ -38,7 +38,7 @@ if detect_w_pattern_second_bottom(data['Open'][trace:n + 1]):
   opened_at = (data['Datetime'][n], data['Open'][n])
 
 elif opened_at != None:
-  if data['Open'][n] >= opened_at[1] * 1.004 or (data['rsi'][n] > 80 and opened_at[1] <= data['Open'][n]):
+  if data['Open'][n] >= opened_at[1] * 1.004:
     res = f"Opened: {opened_at[0]}, {opened_at[1]}, Closed: {data['Datetime'][n]} {data['Open'][n]}"
     opened_at = None
     print(res)
