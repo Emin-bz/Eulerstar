@@ -1,4 +1,5 @@
 import fetch
+fetch.include_yf = False
 import warnings
 warnings.filterwarnings('ignore')
 

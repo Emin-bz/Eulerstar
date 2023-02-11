@@ -1,6 +1,10 @@
 import auth
 import pandas as pd
-import yfinance as yf
+
+include_yf = True
+
+if include_yf:
+  import yfinance as yf
 
 polygon_api_key = "IiYvpxn8CCkNSR5gYFj3NgkRLZvL4YyF"
 
