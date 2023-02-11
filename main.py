@@ -3,7 +3,7 @@ import fetch
 import warnings
 warnings.filterwarnings('ignore')
 
-_start = "2022-09-01"
+_start = "2022-11-01"
 _end = "2023-02-11"
 
 data = fetch.load(_start, _end, 'polygon', 50000)
