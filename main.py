@@ -1,10 +1,12 @@
 import talib
 import fetch
+import warnings
+warnings.filterwarnings('ignore')
 
-_start = "2022-08-01"
-_end = "2023-12-11"
+_start = "2022-04-01"
+_end = "2023-02-11"
 
-data = fetch.load(_start, _end, 'polygon')
+data = fetch.load(_start, _end, 'polygon', 50000)
 
 morning_star = talib.CDLMORNINGSTAR(data['Open'], data['High'], data['Low'], data['Close'])
 engulfing = talib.CDLENGULFING(data['Open'], data['High'], data['Low'], data['Close'])
@@ -54,15 +56,15 @@ def detect_w_pattern_second_bottom(p):
   
 trace = 0
 
-for idx in range(20, len(data['Engulfing'])):
-  if detect_w_pattern_second_bottom(data['Close'][trace:idx]):
-    opened_at = (data['Datetime'][idx] if data['type'][idx] == 'polygon' else data.index[idx], data['Close'][idx])
+for idx in range(20, len(data['Open'])):
+  if detect_w_pattern_second_bottom(data['Open'][trace:idx]):
+    opened_at = (data['Datetime'][idx] if data['type'][idx] == 'polygon' else data.index[idx], data['Open'][idx])
 
   elif opened_at != None:
-    if data['Close'][idx] >= opened_at[1] * 1.004 or (data['rsi'][idx] > 80 and opened_at[1] <= data['Close'][idx]):
-      res = f"Opened: {opened_at[0]}, {opened_at[1]}, Closed: {data['Datetime'][idx] if data['type'][idx] == 'polygon' else data.index[idx]} {data['Close'][idx]}"
+    if data['Open'][idx] >= opened_at[1] * 1.004 or (data['rsi'][idx] > 80 and opened_at[1] <= data['Open'][idx]):
+      res = f"Opened: {opened_at[0]}, {opened_at[1]}, Closed: {data['Datetime'][idx] if data['type'][idx] == 'polygon' else data.index[idx]} {data['Open'][idx]}"
       print(res)
-      calc_profit(opened_at[1], data['Close'][idx])
+      calc_profit(opened_at[1], data['Open'][idx])
       opened_at = None
   
   trace += 1

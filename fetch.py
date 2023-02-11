@@ -1,16 +1,14 @@
 import auth
 import pandas as pd
 import yfinance as yf
-import supertrend
-import rsi
 
 polygon_api_key = "IiYvpxn8CCkNSR5gYFj3NgkRLZvL4YyF"
 
 PAIRNAME = 'SOLUSD'
-TIMEFRAME = '5'
+TIMEFRAME = '1'
 UNIT = 'minute'
 
-def load(start, end, mode):
+def load(start, end, mode, limit):
   raw_bars = []
   bars = []
 
@@ -19,7 +17,7 @@ def load(start, end, mode):
   
   else:
     if mode == 'polygon':
-      ENDPOINT_URL = f'https://api.polygon.io/v2/aggs/ticker/X:{PAIRNAME}/range/{TIMEFRAME}/{UNIT}/{start}/{end}?adjusted=false&sort=asc&limit=50000&apiKey=' + polygon_api_key
+      ENDPOINT_URL = f'https://api.polygon.io/v2/aggs/ticker/X:{PAIRNAME}/range/{TIMEFRAME}/{UNIT}/{start}/{end}?adjusted=false&sort=asc&limit={str(limit)}&apiKey=' + polygon_api_key
       raw_bars = auth.authenticate('GET', ENDPOINT_URL)['results']
 
       for entry in raw_bars:
@@ -39,11 +37,16 @@ def load(start, end, mode):
 
         bars.append([ts, o, high, low, close])
 
+    elif mode == 'live':
+      ENDPOINT_URL = 'https://api.kraken.com/0/public/OHLC?pair=XBTUSD'
+      raw_bars = auth.authenticate('GET', ENDPOINT_URL)['result']['XXBTZUSD']
+
+      for entry in raw_bars:
+        entry[0] = str(entry[0]) + '000'
+        bars.append([int(entry[0]), float(entry[1]), float(entry[2]), float(entry[3]), float(entry[4])])
+
     df = pd.DataFrame(bars[:], columns=['Datetime', 'Open', 'High', 'Low', 'Close'])
     df['Datetime'] = pd.to_datetime(df['Datetime'], unit='ms')
-
-  df = supertrend.calculate_supertrend(df, 10, 3)
-  df = rsi.calculate_rsi(df, 14)
   
   df['type'] = mode
 
