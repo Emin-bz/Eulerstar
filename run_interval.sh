@@ -1,2 +1,2 @@
-source /Users/emb/prvdev/Eulerstar/env/bin/activate
-python3 /Users/emb/prvdev/Eulerstar/live_tester.py
+source /root/Eulerstar/env/bin/activate
+python3 /root/Eulerstar/live_tester.py
