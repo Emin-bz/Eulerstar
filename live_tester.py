@@ -13,8 +13,6 @@ opened_at = [None, None]
 with open('opened_at.json', 'r') as r:
   opened_at = json.load(r)
 
-opened_at = opened_at["opened_at"]
-
 res = ""
 
 def detect_w_pattern_second_bottom(p):
