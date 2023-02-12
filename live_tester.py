@@ -42,7 +42,7 @@ trace = n - 20
 
 if opened_at[0] == None and opened_at[1] == None:
   if detect_w_pattern_second_bottom(data['Close'][trace:n + 1]):
-    opened_at = [data['Datetime'][n], data['Close'][n]]
+    opened_at = [str(data['Datetime'][n]), data['Close'][n]]
     with open(opened_at_path, 'w') as f:
       json.dump(opened_at, f)
     print(f"Opened at {opened_at[0]}, price {opened_at[1]}.")
