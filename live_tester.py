@@ -32,9 +32,10 @@ def detect_w_pattern_second_bottom(p):
 n = len(data['Close']) - 1
 trace = n - 20
 
-if detect_w_pattern_second_bottom(data['Close'][trace:n + 1]):
-  opened_at = (data['Datetime'][n], data['Close'][n])
-  print(f"Opened at {opened_at[0]}, price {opened_at[1]}.")
+if opened_at == None:
+  if detect_w_pattern_second_bottom(data['Close'][trace:n + 1]):
+    opened_at = (data['Datetime'][n], data['Close'][n])
+    print(f"Opened at {opened_at[0]}, price {opened_at[1]}.")
 
 elif opened_at != None:
   if data['Close'][n] >= opened_at[1] * 1.004:
