@@ -38,9 +38,9 @@ def load(start, end, mode, limit):
         bars.append([ts, o, high, low, close])
 
     elif mode == 'live':
-      ENDPOINT_URL = 'https://api.kraken.com/0/public/OHLC?pair=XBTUSD'
-      raw_bars = auth.authenticate('GET', ENDPOINT_URL)['result']['XXBTZUSD']
-
+      ENDPOINT_URL = f'https://api.kraken.com/0/public/OHLC?pair={PAIRNAME}'
+      raw_bars = auth.authenticate('GET', ENDPOINT_URL)['result'][PAIRNAME]
+      
       for entry in raw_bars:
         entry[0] = str(entry[0]) + '000'
         bars.append([int(entry[0]), float(entry[1]), float(entry[2]), float(entry[3]), float(entry[4])])

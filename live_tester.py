@@ -1,3 +1,4 @@
+import json
 import fetch
 import warnings
 warnings.filterwarnings('ignore')
@@ -7,7 +8,13 @@ _end = "2023-02-13"
 
 data = fetch.load(_start, _end, 'live', 100)
 
-opened_at = None
+opened_at = [None, None]
+
+with open('opened_at.json', 'r') as r:
+  opened_at = json.load(r)
+
+opened_at = opened_at["opened_at"]
+
 res = ""
 
 def detect_w_pattern_second_bottom(p):
@@ -32,13 +39,17 @@ def detect_w_pattern_second_bottom(p):
 n = len(data['Close']) - 1
 trace = n - 20
 
-if opened_at == None:
+if opened_at[0] == None and opened_at[1] == None:
   if detect_w_pattern_second_bottom(data['Close'][trace:n + 1]):
-    opened_at = (data['Datetime'][n], data['Close'][n])
+    opened_at = [data['Datetime'][n], data['Close'][n]]
+    with open('opened_at.json', 'w') as f:
+      json.dump(opened_at, f)
     print(f"Opened at {opened_at[0]}, price {opened_at[1]}.")
 
-elif opened_at != None:
+elif opened_at[0] != None and opened_at[1] != None:
   if data['Close'][n] >= opened_at[1] * 1.004:
     res = f"Opened: {opened_at[0]}, {opened_at[1]}, Closed: {data['Datetime'][n]} {data['Close'][n]}"
-    opened_at = None
+    opened_at = [None, None]
+    with open('opened_at.json', 'w') as f:
+      json.dump(opened_at, f)
     print(res)
