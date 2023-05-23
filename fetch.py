@@ -4,9 +4,9 @@ import yfinance as yf
 
 polygon_api_key = "IiYvpxn8CCkNSR5gYFj3NgkRLZvL4YyF"
 
-PAIRNAME = 'SOLUSD'
+PAIRNAME = 'BTCUSD'
 TIMEFRAME = '1'
-UNIT = 'minute'
+UNIT = 'hour'
 
 def load(start, end, mode, limit):
   raw_bars = []
@@ -22,6 +22,8 @@ def load(start, end, mode, limit):
 
       for entry in raw_bars:
         bars.append([entry['t'], entry['o'], entry['h'], entry['l'], entry['c']])
+        # with open("chart.txt", "a") as w:
+        #   w.write(f"{entry['t']}, {entry['o']}, {entry['h']}, {entry['l']}, {entry['c']}\n")
     
     elif mode == 'local':
       with open('chart.txt', 'r') as readfile:
@@ -29,12 +31,11 @@ def load(start, end, mode, limit):
             raw_bars.append(line.rstrip().split(', '))
       
       for entry in raw_bars:
-        ts = int(entry[0])
+        ts = int(entry[0]) 
         o = float(entry[1])
         high = float(entry[2])
         low = float(entry[3])
         close = float(entry[4])
-
         bars.append([ts, o, high, low, close])
 
     elif mode == 'live':
@@ -49,5 +50,6 @@ def load(start, end, mode, limit):
     df['Datetime'] = pd.to_datetime(df['Datetime'], unit='ms')
   
   df['type'] = mode
+
 
   return df
