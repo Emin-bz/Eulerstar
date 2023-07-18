@@ -12,6 +12,7 @@ kraken = ccxt.kraken(
         "secret": "YOUR_API_SECRET",
     }
 )
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def calculate_supertrend(df, period=7, multiplier=3):
@@ -101,15 +102,18 @@ def place_order(order_type, price, amount):
         "amount": amount,
     }
 
+    file_path = os.path.join(script_dir, "orders.log")
+
     # Write the order to a file
-    with open("orders.log", "a") as f:
+    with open(file_path, "a") as f:
         f.write(json.dumps(order) + "\n")
 
 
 def load_open_position():
     """Load the open position from the file, if it exists."""
     if os.path.exists("open_position.json"):
-        with open("open_position.json", "r") as f:
+        file_path = os.path.join(script_dir, "open_position.json")
+        with open(file_path, "r") as f:
             return json.load(f)
     else:
         return None
@@ -117,7 +121,8 @@ def load_open_position():
 
 def save_open_position(open_position):
     """Save the open position to a file."""
-    with open("open_position.json", "w") as f:
+    file_path = os.path.join(script_dir, "open_position.json")
+    with open(file_path, "w") as f:
         json.dump(open_position, f)
 
 
