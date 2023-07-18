@@ -111,8 +111,8 @@ def place_order(order_type, price, amount):
 
 def load_open_position():
     """Load the open position from the file, if it exists."""
-    if os.path.exists("open_position.json"):
-        file_path = os.path.join(script_dir, "open_position.json")
+    file_path = os.path.join(script_dir, "open_position.json")
+    if os.path.exists(file_path):
         with open(file_path, "r") as f:
             return json.load(f)
     else:
