@@ -5,29 +5,13 @@ import statsmodels.api as sm
 
 warnings.filterwarnings("ignore")
 
-_start = "2023-01-01"
-_end = "2023-07-18"
-
-df = fetch.load(_start, _end, "polygon", 50000)
-
-morning_star = talib.CDLMORNINGSTAR(df["Open"], df["High"], df["Low"], df["Close"])
-engulfing = talib.CDLENGULFING(df["Open"], df["High"], df["Low"], df["Close"])
-
-df["Morning Star"] = morning_star
-df["Engulfing"] = engulfing
-
-opened_at = None
-res = ""
-capital = 1000
-profit = -0
-
 
 def calc_profit(start, end):
     global profit
 
     diff = 1 - (start / end)
     profit += capital * diff
-    fee = ((capital / 100) * 0.1) * 2
+    fee = ((capital / 100) * entry_exit_fee) * 2
     profit -= fee
 
 
@@ -49,32 +33,29 @@ def calculate_supertrend(df, period=7, multiplier=3):
     hl_avg = (df["High"] + df["Low"]) / 2
     atr = pd.DataFrame.ewm(hl_avg - hl_avg.shift(), span=period).mean()
 
-    upper_band = hl_avg + (multiplier * atr)
-    lower_band = hl_avg - (multiplier * atr)
-
-    df["upper_band"] = upper_band
-    df["lower_band"] = lower_band
+    df["upper_band"] = hl_avg + (multiplier * atr)
+    df["lower_band"] = hl_avg - (multiplier * atr)
     df["in_uptrend"] = True
 
     for current in range(1, len(df.index)):
         previous = current - 1
 
         if df["Close"][current] > df["upper_band"][previous]:
-            df["in_uptrend"][current] = True
+            df.at[current, "in_uptrend"] = True
         elif df["Close"][current] < df["lower_band"][previous]:
-            df["in_uptrend"][current] = False
+            df.at[current, "in_uptrend"] = False
         else:
-            df["in_uptrend"][current] = df["in_uptrend"][previous]
+            df.at[current, "in_uptrend"] = df["in_uptrend"][previous]
             if (
                 df["in_uptrend"][current]
                 and df["lower_band"][current] < df["lower_band"][previous]
             ):
-                df["lower_band"][current] = df["lower_band"][previous]
+                df.at[current, "lower_band"] = df["lower_band"][previous]
             if (
                 not df["in_uptrend"][current]
                 and df["upper_band"][current] > df["upper_band"][previous]
             ):
-                df["upper_band"][current] = df["upper_band"][previous]
+                df.at[current, "upper_band"] = df["upper_band"][previous]
 
     return df
 
@@ -97,6 +78,17 @@ def calculate_slope(series, period=5):
     slope_angle = np.rad2deg(np.arctan(np.array(slopes)))
     return np.array(slope_angle)
 
+
+_start = "2022-03-01"
+_end = "2023-07-18"
+
+df = fetch.load(_start, _end, "polygon", 50000)
+
+opened_at = None
+res = ""
+capital = 1000
+profit = 0
+entry_exit_fee = 0.1
 
 df = calculate_supertrend(df, period=7, multiplier=3)
 df["slope"] = calculate_slope(

@@ -1,9 +1,6 @@
+import ccxt
 import pandas as pd
 import numpy as np
-import json
-from datetime import datetime
-import ccxt
-import os
 
 # Initialize Kraken client
 kraken = ccxt.kraken(
@@ -19,29 +16,32 @@ def calculate_supertrend(df, period=7, multiplier=3):
     hl_avg = (df["High"] + df["Low"]) / 2
     atr = pd.DataFrame.ewm(hl_avg - hl_avg.shift(), span=period).mean()
 
-    df["upper_band"] = hl_avg + (multiplier * atr)
-    df["lower_band"] = hl_avg - (multiplier * atr)
+    upper_band = hl_avg + (multiplier * atr)
+    lower_band = hl_avg - (multiplier * atr)
+
+    df["upper_band"] = upper_band
+    df["lower_band"] = lower_band
     df["in_uptrend"] = True
 
     for current in range(1, len(df.index)):
         previous = current - 1
 
         if df["Close"][current] > df["upper_band"][previous]:
-            df.at[current, "in_uptrend"] = True
+            df["in_uptrend"][current] = True
         elif df["Close"][current] < df["lower_band"][previous]:
-            df.at[current, "in_uptrend"] = False
+            df["in_uptrend"][current] = False
         else:
-            df.at[current, "in_uptrend"] = df["in_uptrend"][previous]
+            df["in_uptrend"][current] = df["in_uptrend"][previous]
             if (
                 df["in_uptrend"][current]
                 and df["lower_band"][current] < df["lower_band"][previous]
             ):
-                df.at[current, "lower_band"] = df["lower_band"][previous]
+                df["lower_band"][current] = df["lower_band"][previous]
             if (
                 not df["in_uptrend"][current]
                 and df["upper_band"][current] > df["upper_band"][previous]
             ):
-                df.at[current, "upper_band"] = df["upper_band"][previous]
+                df["upper_band"][current] = df["upper_band"][previous]
 
     return df
 
@@ -88,12 +88,11 @@ def fetch_data():
 
 
 def place_order(order_type, price, amount):
-    """Simulate placing an order by logging it to a file."""
+    """Place an order on Kraken."""
     symbol = "BTC/USD"  # replace with your desired trading pair
 
     # Define the order
     order = {
-        "timestamp": datetime.now().isoformat(),
         "symbol": symbol,
         "type": order_type,
         "side": "buy" if order_type == "limit" else "sell",
@@ -101,24 +100,10 @@ def place_order(order_type, price, amount):
         "amount": amount,
     }
 
-    # Write the order to a file
-    with open("orders.log", "a") as f:
-        f.write(json.dumps(order) + "\n")
+    # Place the order
+    result = kraken.create_order(**order)
 
-
-def load_open_position():
-    """Load the open position from the file, if it exists."""
-    if os.path.exists("open_position.json"):
-        with open("open_position.json", "r") as f:
-            return json.load(f)
-    else:
-        return None
-
-
-def save_open_position(open_position):
-    """Save the open position to a file."""
-    with open("open_position.json", "w") as f:
-        json.dump(open_position, f)
+    return result
 
 
 def main():
@@ -126,20 +111,14 @@ def main():
     # Fetch the data
     df = fetch_data()
 
-    # Load the open position, if it exists
-    opened_at = load_open_position()
-
     # Check the latest Supertrend and slope
     latest = df.iloc[-1]
-    if latest["in_uptrend"] and latest["slope"] > 1 and opened_at is None:
-        # Simulate a buy order
-        opened_at = {"time": str(latest["Timestamp"]), "price": latest["Close"]}
-        save_open_position(opened_at)
+    if latest["in_uptrend"] and latest["slope"] > 1:
+        # Place a buy order
         place_order("limit", latest["Close"], 0.01)  # replace with your desired amount
-    elif not latest["in_uptrend"] and latest["slope"] < 0 and opened_at is not None:
-        # Simulate a sell order
+    elif not latest["in_uptrend"] and latest["slope"] < 0:
+        # Place a sell order
         place_order("market", latest["Close"], 0.01)  # replace with your desired amount
-        os.remove("open_position.json")
 
 
 if __name__ == "__main__":

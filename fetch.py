@@ -4,7 +4,7 @@ import yfinance as yf
 
 polygon_api_key = "IiYvpxn8CCkNSR5gYFj3NgkRLZvL4YyF"
 
-PAIRNAME = "SOLUSD"
+PAIRNAME = "BTCUSD"
 TIMEFRAME = "5"
 UNIT = "minute"
 
