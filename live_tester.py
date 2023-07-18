@@ -69,7 +69,7 @@ def calculate_slope(series, period=5):
 def fetch_data():
     """Fetch the latest data from Kraken."""
     # Define the symbol and timeframe
-    symbol = "BTC/USD"  # replace with your desired trading pair
+    symbol = "SOL/USD"  # replace with your desired trading pair
     timeframe = "5m"  # 5 minute OHLCV data
 
     # Fetch the OHLCV data
@@ -90,7 +90,7 @@ def fetch_data():
 
 def place_order(order_type, price, amount):
     """Simulate placing an order by logging it to a file."""
-    symbol = "BTC/USD"  # replace with your desired trading pair
+    symbol = "SOL/USD"  # replace with your desired trading pair
 
     # Define the order
     order = {
@@ -140,10 +140,10 @@ def main():
         # Simulate a buy order
         opened_at = {"time": str(latest["Timestamp"]), "price": latest["Close"]}
         save_open_position(opened_at)
-        place_order("limit", latest["Close"], 0.01)  # replace with your desired amount
+        place_order("limit", latest["Close"], 50)  # replace with your desired amount
     elif not latest["in_uptrend"] and latest["slope"] < 0 and opened_at is not None:
         # Simulate a sell order
-        place_order("market", latest["Close"], 0.01)  # replace with your desired amount
+        place_order("market", latest["Close"], 50)  # replace with your desired amount
         file_path = os.path.join(script_dir, "open_position.json")
         os.remove(file_path)
 
