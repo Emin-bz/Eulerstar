@@ -144,7 +144,8 @@ def main():
     elif not latest["in_uptrend"] and latest["slope"] < 0 and opened_at is not None:
         # Simulate a sell order
         place_order("market", latest["Close"], 0.01)  # replace with your desired amount
-        os.remove("open_position.json")
+        file_path = os.path.join(script_dir, "open_position.json")
+        os.remove(file_path)
 
 
 if __name__ == "__main__":
