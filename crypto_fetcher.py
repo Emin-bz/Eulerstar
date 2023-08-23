@@ -2,10 +2,13 @@ import auth
 import pandas as pd
 import yfinance as yf
 
-polygon_api_key = "IiYvpxn8CCkNSR5gYFj3NgkRLZvL4YyF"
+with open("secret.txt", "r") as fsecret:
+    polygon_api_key = fsecret.readline()
 
-PAIRNAME = "BTCUSD"
-TIMEFRAME = "5"
+YFINANCE_PAIRNAME = "TSLA"
+
+PAIRNAME = "SOLUSD"
+TIMEFRAME = "15"
 UNIT = "minute"
 
 
@@ -14,7 +17,7 @@ def load(start, end, mode, limit):
     bars = []
 
     if mode == "yfinance":
-        df = yf.download("TSLA", start=start, end=end, interval="1m")
+        df = yf.download(YFINANCE_PAIRNAME, start=start, end=end, interval="1m")
 
     else:
         if mode == "polygon":

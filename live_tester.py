@@ -7,10 +7,10 @@ import os
 
 # Initialize Kraken client
 kraken = ccxt.kraken(
-    {
-        "apiKey": "YOUR_API_KEY",
-        "secret": "YOUR_API_SECRET",
-    }
+    # {
+    #     "apiKey": "",
+    #     "secret": "",
+    # }
 )
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
