@@ -1,0 +1,1 @@
+# Algorithmic cryptocurrency trading repository containing a backtesting, live-testing and a real-time trading bot
