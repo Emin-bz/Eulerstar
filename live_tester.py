@@ -16,7 +16,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 def calculate_supertrend(df, period=7, multiplier=3):
-    """Calculate Supertrend given a pandas dataframe of OHLC data."""
     hl_avg = (df["High"] + df["Low"]) / 2
     atr = pd.DataFrame.ewm(hl_avg - hl_avg.shift(), span=period).mean()
 
@@ -48,7 +47,6 @@ def calculate_supertrend(df, period=7, multiplier=3):
 
 
 def calculate_slope(series, period=5):
-    """Calculate the slope of a pandas series."""
     # Initialize a list with np.nan for the first period-1 elements
     slopes = [np.nan for _ in range(period - 1)]
 
@@ -67,7 +65,6 @@ def calculate_slope(series, period=5):
 
 
 def fetch_data():
-    """Fetch the latest data from Kraken."""
     # Define the symbol and timeframe
     symbol = "SOL/USD"  # replace with your desired trading pair
     timeframe = "5m"  # 5 minute OHLCV data
@@ -89,7 +86,6 @@ def fetch_data():
 
 
 def place_order(order_type, price, amount):
-    """Simulate placing an order by logging it to a file."""
     symbol = "SOL/USD"  # replace with your desired trading pair
 
     # Define the order
@@ -110,7 +106,6 @@ def place_order(order_type, price, amount):
 
 
 def load_open_position():
-    """Load the open position from the file, if it exists."""
     file_path = os.path.join(script_dir, "open_position.json")
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
@@ -120,14 +115,12 @@ def load_open_position():
 
 
 def save_open_position(open_position):
-    """Save the open position to a file."""
     file_path = os.path.join(script_dir, "open_position.json")
     with open(file_path, "w") as f:
         json.dump(open_position, f)
 
 
 def main():
-    """Main trading bot function."""
     # Fetch the data
     df = fetch_data()
 
@@ -140,10 +133,10 @@ def main():
         # Simulate a buy order
         opened_at = {"time": str(latest["Timestamp"]), "price": latest["Close"]}
         save_open_position(opened_at)
-        place_order("limit", latest["Close"], 50)  # replace with your desired amount
+        place_order("limit", latest["Close"], 50)
     elif not latest["in_uptrend"] and latest["slope"] < 0 and opened_at is not None:
         # Simulate a sell order
-        place_order("market", latest["Close"], 50)  # replace with your desired amount
+        place_order("market", latest["Close"], 50)
         file_path = os.path.join(script_dir, "open_position.json")
         os.remove(file_path)
 
